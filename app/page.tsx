@@ -42,14 +42,14 @@ export default function Home() {
 
   const getExpectedHours = (date: string): number => {
     const day = new Date(date).getDay();
-    if (day === 0) return 0; // Sunday
-    if (day === 6) return businessRules.saturdayHours; // Saturday
-    return businessRules.weekdayHours; // Monday-Friday
+    if (day === 0) return 0;
+    if (day === 6) return businessRules.saturdayHours;
+    return businessRules.weekdayHours;
   };
 
   const isWorkingDay = (date: string): boolean => {
     const day = new Date(date).getDay();
-    return day !== 0; // Not Sunday
+    return day !== 0;
   };
 
   const parseExcelFile = (file: File) => {
@@ -107,14 +107,12 @@ export default function Home() {
       });
     });
 
-    // Sort by date
     Object.keys(employeeData).forEach(emp => {
       employeeData[emp].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     });
 
     setEmployees(employeeData);
     
-    // Set defaults
     if (Object.keys(employeeData).length > 0) {
       setSelectedEmployee(Object.keys(employeeData)[0]);
       
@@ -166,7 +164,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
-            {/* Header */}
             <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
             <h1 className="text-3xl font-bold text-gray-800 mb-2 flex items-center gap-2">
                 <TrendingUp className="text-indigo-600" />
@@ -175,7 +172,6 @@ export default function Home() {
             <p className="text-gray-600">Track employee attendance, leaves, and productivity</p>
             </div>
 
-        {/* Upload Section */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
                 <Upload className="text-indigo-600" />
@@ -214,7 +210,6 @@ export default function Home() {
           )}
         </div>
 
-        {/* Filters */}
         {Object.keys(employees).length > 0 && (
           <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
             <div className="grid md:grid-cols-2 gap-4">
@@ -253,7 +248,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* Stats Dashboard */}
         {stats && (
           <>
             <div className="grid md:grid-cols-4 gap-4 mb-6">
@@ -292,7 +286,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Daily Breakdown */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">Daily Attendance Breakdown</h2>
               <div className="overflow-x-auto">
@@ -345,7 +338,6 @@ export default function Home() {
           </>
         )}
 
-        {/* Instructions */}
         {Object.keys(employees).length === 0 && (
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">How to Use</h2>
@@ -363,4 +355,5 @@ export default function Home() {
       </div>
     </div>
   );
+
 }
