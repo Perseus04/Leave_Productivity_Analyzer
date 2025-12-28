@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Leave & Productivity Analyzer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>📊 Employee Productivity Dashboard</h1>
+    <button class="nav-btn" onclick="goHome()">
+        <span>←</span> Back to Home
+    </button>
+    <div class="filters">
+        <div>
+            <label>👤 Employee</label>
+            <select id="employeeSelect">
+                <option value="">Select Employee</option>
+            </select>
+        </div>
+
+        <div>
+            <label>📅 Year</label>
+            <select id="yearSelect">
+                <option value="">Select Year</option>
+            </select>
+        </div>
+
+        <div>
+            <label>📆 Month</label>
+            <select id="monthSelect">
+                <option value="">Select Month</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="cards">
+        <div class="card">
+            <div>⏰ Expected Hours</div>
+            <span id="expected">0</span>
+        </div>
+
+        <div class="card">
+            <div>✅ Worked Hours</div>
+            <span id="worked">0</span>
+        </div>
+
+        <div class="card">
+            <div>🏖️ Leaves Used</div>
+            <span id="leaves">0 / 2</span>
+        </div>
+
+        <div class="card">
+            <div>📈 Productivity</div>
+            <span id="productivity">0%</span>
+        </div>
+    </div>
+
+    <h2>📅 Daily Attendance</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>📅 Date</th>
+                <th>📆 Day</th>
+                <th>🕐 In-Time</th>
+                <th>🕐 Out-Time</th>
+                <th>⏱️ Worked Hours</th>
+                <th>📊 Status</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <tr>
+                <td colspan="6" style="padding: 50px; color: #718096; font-style: italic; font-size: 16px;">
+                    Select employee, year, and month to view records
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+function goHome() {
+    window.location.href = "index.html";
+}
+</script>
+
+<script src="dashboard.js"></script>
+
+</body>
+</html>

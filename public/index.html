@@ -1,209 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Attendance Excel Upload</title>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <title>Leave & Productivity Analyzer</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+<script>
+function goToDashboard() {
+    window.location.href = "dashboard.html";
+}
+</script>
 <body>
 
-<div class="background-shapes">
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
-    <div class="shape shape-3"></div>
-</div>
+<h2>Leave & Productivity Analyzer</h2>
 
-<div class="container">
-    <div class="header">
-        <div class="icon-wrapper">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-        </div>
-        <h1>Attendance Management</h1>
-        <p class="subtitle">Upload and process your attendance Excel files</p>
-    </div>
+<input type="file" id="fileInput" accept=".xlsx">
+<button onclick="loadExcel()">Preview Excel</button>
+<button onclick="uploadExcel()">Upload to Database</button>
 
-    <div class="upload-section">
-        <div class="file-input-wrapper">
-            <input type="file" id="excelFile" accept=".xlsx" class="file-input">
-            <label for="excelFile" class="file-label">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="17 8 12 3 7 8"></polyline>
-                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                </svg>
-                <span class="file-label-text">Choose Excel File</span>
-                <span class="file-name" id="fileName">No file selected</span>
-            </label>
-        </div>
-        
-        <button id="uploadBtn" class="upload-btn" disabled>
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-            </svg>
-            Send to Backend
-        </button>
-    </div>
+<p id="status"></p>
 
-    <div class="status" id="statusMsg"></div>
+<h3>Excel Attendance Preview</h3>
+<table id="previewTable">
+    <thead id="tableHead"></thead>
+    <tbody id="tableBody"></tbody>
+</table>
 
-    <div class="table-wrapper">
-        <table id="previewTable"></table>
-    </div>
-</div>
+<button class="nav-btn" onclick="goToDashboard()">
+    Go to Dashboard
+</button>
 
-<script>
-    let attendanceData = [];
-
-    const fileInput = document.getElementById("excelFile");
-    const uploadBtn = document.getElementById("uploadBtn");
-    const statusMsg = document.getElementById("statusMsg");
-    const fileName = document.getElementById("fileName");
-
-    fileInput.addEventListener("change", handleFile);
-    uploadBtn.addEventListener("click", sendToBackend);
-
-    function handleFile(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        fileName.textContent = file.name;
-
-        const reader = new FileReader();
-
-        reader.onload = function(e) {
-            const data = new Uint8Array(e.target.result);
-
-            const workbook = XLSX.read(data, { type: "array" });
-            const sheet = workbook.Sheets[workbook.SheetNames[0]];
-
-            attendanceData = XLSX.utils.sheet_to_json(sheet, {
-                raw: true,
-                defval: ""
-            });
-
-            previewTable(attendanceData);
-            uploadBtn.disabled = attendanceData.length === 0;
-            statusMsg.textContent = "✓ File processed successfully";
-            statusMsg.className = "status status-success";
-        };
-
-        reader.readAsArrayBuffer(file);
-    }
-
-    function formatExcelTime(value) {
-        if (value === "" || value == null) return "";
-        if (typeof value === "string") return value;
-
-        if (typeof value === "number") {
-            const totalMinutes = Math.round(value * 24 * 60);
-            const hh = Math.floor(totalMinutes / 60);
-            const mm = totalMinutes % 60;
-            return String(hh).padStart(2, "0") + ":" +
-                   String(mm).padStart(2, "0");
-        }
-
-        return value;
-    }
-
-    function formatExcelDate(value) {
-        if (value === "" || value == null) return "";
-
-        if (typeof value === "number") {
-            const d = XLSX.SSF.parse_date_code(value);
-            if (!d) return value;
-
-            return String(d.d).padStart(2, "0") + "-" +
-                   String(d.m).padStart(2, "0") + "-" +
-                   d.y;
-        }
-
-        return value;
-    }
-
-    function previewTable(data) {
-        const table = document.getElementById("previewTable");
-        table.innerHTML = "";
-
-        if (!data.length) return;
-
-        const headerRow = document.createElement("tr");
-        Object.keys(data[0]).forEach(col => {
-            const th = document.createElement("th");
-            th.textContent = col;
-            headerRow.appendChild(th);
-        });
-        table.appendChild(headerRow);
-
-        data.forEach((row, index) => {
-            const tr = document.createElement("tr");
-            tr.style.animationDelay = `${index * 0.03}s`;
-
-            Object.entries(row).forEach(([key, value]) => {
-                const td = document.createElement("td");
-
-                let displayValue = value;
-
-                if (key.toLowerCase().includes("date")) {
-                    displayValue = formatExcelDate(value);
-                }
-
-                if (key.toLowerCase().includes("time")) {
-                    displayValue = formatExcelTime(value);
-                }
-
-                td.textContent = displayValue;
-                tr.appendChild(td);
-            });
-
-            table.appendChild(tr);
-        });
-    }
-
-    function sendToBackend() {
-        statusMsg.textContent = "⏳ Sending data to backend...";
-        statusMsg.className = "status status-loading";
-        uploadBtn.disabled = true;
-
-        const payload = attendanceData.map(row => ({
-            ...row,
-            date: formatExcelDate(row.date),
-            in_time: formatExcelTime(row.in_time),
-            out_time: formatExcelTime(row.out_time)
-        }));
-
-        fetch("/api/upload-attendance", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                uploaded_at: new Date().toISOString(),
-                records: attendanceData
-            })
-        })
-        .then(res => {
-            if (!res.ok) throw new Error();
-            return res.json();
-        })
-        .then(() => {
-            statusMsg.textContent = "✓ Attendance uploaded successfully";
-            statusMsg.className = "status status-success";
-        })
-        .catch(() => {
-            statusMsg.textContent = "⚠ Backend not available yet (frontend is ready)";
-            statusMsg.className = "status status-warning";
-            uploadBtn.disabled = false;
-        });
-    }
-</script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
