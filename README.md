@@ -15,19 +15,13 @@ A full-stack web application that analyzes employee attendance, leave usage, and
 
 ## Tech Stack
 
-- Frontend: Next.js 14, React 18, TypeScript, HTML
-- Styling: CSS, Tailwind CSS
-- Excel Parsing: SheetJS (xlsx)
-- Icons: Lucide React
+- Frontend: HTML, JavaScript
+- Styling: CSS
+- Excel Parsing: ExcelJS
 
 ## Installation
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/leave-productivity-analyzer.git
-cd leave-productivity-analyzer
-```
-
+1. Clone the repository
 2. Install dependencies:
 ```bash
 npm install
@@ -68,17 +62,8 @@ Note: Missing In-Time/Out-Time indicates a leave day.
 3. Import your GitHub repository
 4. Click Deploy
 
-### Deploy to Netlify
-
-1. Push your code to GitHub
-2. Go to [netlify.com](https://netlify.com)
-3. Click "New site from Git"
-4. Select your repository
-5. Build command: `npm run build`
-6. Publish directory: `.next`
-7. Click Deploy
-
 ## 📝 Sample Data
 
-A sample Excel file is included in the repository (`public/Attendance_Record.xlsx`) for testing purposes.
+A sample Excel file is included in the repository (`excelTest/Attendance_Record.xlsx`) for testing purposes.
+
 
